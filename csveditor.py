@@ -179,6 +179,7 @@ class FastEntry(QMainWindow):
         self.table.horizontalHeader().setSectionResizeMode(self.COL_AMOUNT, QHeaderView.ResizeMode.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(self.COL_RUNNING, QHeaderView.ResizeMode.ResizeToContents)
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | QAbstractItemView.EditTrigger.EditKeyPressed)
         self.table.installEventFilter(self)
         self.table.itemChanged.connect(self.on_item_changed)
@@ -650,9 +651,9 @@ class FastEntry(QMainWindow):
                 item.setText(f"{amt:.2f}")
                 self._updating = False
                 self.color_amount_item(item, amt)
-                item.setBackground(QBrush(QColor("#FFFFFF")))
+                item.setBackground(QBrush(QColor("#111827")))
             except (InvalidOperation, ValueError):
-                item.setBackground(QBrush(QColor("#FFD7D7")))
+                item.setBackground(QBrush(QColor("#7f1d1d")))
                 self.set_status(f"Invalid amount at row {r + 1}.")
                 return
 
