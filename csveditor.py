@@ -193,6 +193,10 @@ class FastEntry(QMainWindow):
         self.edit_amount = QLineEdit()
         self.btn_apply_edit = QPushButton("Apply Selected Row Edit")
         self.btn_apply_edit.clicked.connect(self.apply_selected_edit)
+        self.btn_move_up = QPushButton("Move Row Up (Alt+Up)")
+        self.btn_move_up.clicked.connect(self.move_selected_up)
+        self.btn_move_down = QPushButton("Move Row Down (Alt+Down)")
+        self.btn_move_down.clicked.connect(self.move_selected_down)
         editor.addWidget(QLabel("Edit Date:"))
         editor.addWidget(self.edit_date, 2)
         editor.addWidget(QLabel("Edit Description:"))
@@ -202,6 +206,8 @@ class FastEntry(QMainWindow):
         editor.addWidget(QLabel("Edit Amount:"))
         editor.addWidget(self.edit_amount, 2)
         editor.addWidget(self.btn_apply_edit, 2)
+        editor.addWidget(self.btn_move_up, 1)
+        editor.addWidget(self.btn_move_down, 1)
 
         paste_row = QHBoxLayout()
         main.addLayout(paste_row)
@@ -256,6 +262,7 @@ class FastEntry(QMainWindow):
         paste_row.addLayout(btns, 1)
 
         self.make_shortcuts()
+        self.apply_modern_theme()
         self.date.returnPressed.connect(lambda: self.desc.setFocus())
         self.desc.returnPressed.connect(lambda: self.category.setFocus())
         self.category.returnPressed.connect(lambda: self.amount.setFocus())
@@ -269,6 +276,45 @@ class FastEntry(QMainWindow):
 
     def set_status(self, msg: str):
         self.status.setText(msg)
+
+    def apply_modern_theme(self):
+        self.setStyleSheet(
+            """
+            QMainWindow { background: #f3f6fb; }
+            QLabel { color: #1f2937; }
+            QLineEdit, QTextEdit, QComboBox, QTableWidget {
+                background: #ffffff;
+                border: 1px solid #d7deeb;
+                border-radius: 8px;
+                padding: 6px;
+            }
+            QPushButton {
+                background: #2563eb;
+                color: #ffffff;
+                border: none;
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-weight: 600;
+            }
+            QPushButton:hover { background: #1d4ed8; }
+            QPushButton:pressed { background: #1e40af; }
+            QCheckBox { spacing: 6px; }
+            QHeaderView::section {
+                background: #e8eef9;
+                color: #0f172a;
+                padding: 8px;
+                border: 0;
+                border-right: 1px solid #d7deeb;
+                border-bottom: 1px solid #d7deeb;
+                font-weight: 600;
+            }
+            QTableWidget {
+                gridline-color: #e5e9f2;
+                selection-background-color: #dbeafe;
+                selection-color: #0f172a;
+            }
+            """
+        )
 
     def set_lineedit_bg(self, le: QLineEdit, color_hex: str | None):
         le.setStyleSheet("" if not color_hex else f"QLineEdit {{ background-color: {color_hex}; }}")
@@ -769,29 +815,55 @@ class FastEntry(QMainWindow):
         self.set_status(f"Duplicated {len(rows)} row(s).")
 
     def move_selected(self, delta: int):
-        if self.auto_sort.isChecked():
-            self.set_status("Disable auto-sort to move rows manually.")
-            return
         rows = sorted({idx.row() for idx in self.table.selectionModel().selectedRows()})
-        if len(rows) != 1:
-            self.set_status("Select exactly one row to move.")
+        if not rows:
+            self.set_status("Select at least one row to move.")
             return
-        r = rows[0]
-        new_r = r + delta
-        if new_r < 0 or new_r >= self.table.rowCount():
+        if delta not in (-1, 1):
             return
+        if self.auto_sort.isChecked():
+            self.auto_sort.setChecked(False)
+            self.set_status("Auto-sort disabled so row order can be adjusted manually.")
+
+        if delta == -1 and rows[0] == 0:
+            return
+        if delta == 1 and rows[-1] == self.table.rowCount() - 1:
+            return
+
         self.push_undo_snapshot()
-        vals = [self.table.item(r, c).clone() for c in range(self.table.columnCount())]
-        vals2 = [self.table.item(new_r, c).clone() for c in range(self.table.columnCount())]
+
+        moved = set(rows)
         self._updating = True
-        for c in range(self.table.columnCount()):
-            self.table.setItem(r, c, vals2[c])
-            self.table.setItem(new_r, c, vals[c])
+
+        if delta == -1:
+            for r in rows:
+                prev_row = r - 1
+                if prev_row not in moved:
+                    self.swap_rows(prev_row, r)
+            new_rows = [r - 1 for r in rows]
+        else:
+            for r in reversed(rows):
+                next_row = r + 1
+                if next_row not in moved:
+                    self.swap_rows(r, next_row)
+            new_rows = [r + 1 for r in rows]
+
         self._updating = False
-        self.table.selectRow(new_r)
+
+        self.table.clearSelection()
+        for r in new_rows:
+            self.table.selectRow(r)
+
         self.update_running_balances()
         self.recompute_dynamic_closing()
         self.apply_filter()
+
+    def swap_rows(self, r1: int, r2: int):
+        vals1 = [self.table.item(r1, c).clone() for c in range(self.table.columnCount())]
+        vals2 = [self.table.item(r2, c).clone() for c in range(self.table.columnCount())]
+        for c in range(self.table.columnCount()):
+            self.table.setItem(r1, c, vals2[c])
+            self.table.setItem(r2, c, vals1[c])
 
     def move_selected_up(self):
         self.move_selected(-1)
