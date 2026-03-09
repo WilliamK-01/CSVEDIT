@@ -281,41 +281,70 @@ class FastEntry(QMainWindow):
     def apply_modern_theme(self):
         self.setStyleSheet(
             """
-            QMainWindow { background: #f3f6fb; }
-            QLabel { color: #1f2937; }
+            QMainWindow, QWidget {
+                background: #0f172a;
+                color: #e2e8f0;
+            }
+            QLabel {
+                color: #cbd5e1;
+            }
             QLineEdit, QTextEdit, QComboBox, QTableWidget {
-                background: #ffffff;
-                border: 1px solid #d7deeb;
+                background: #111827;
+                color: #e2e8f0;
+                border: 1px solid #334155;
                 border-radius: 8px;
                 padding: 6px;
+                selection-background-color: #1d4ed8;
+                selection-color: #f8fafc;
+            }
+            QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
+                border: 1px solid #3b82f6;
             }
             QPushButton {
                 background: #2563eb;
                 color: #ffffff;
-                border: none;
+                border: 1px solid #1d4ed8;
                 border-radius: 8px;
                 padding: 8px 12px;
                 font-weight: 600;
             }
-            QPushButton:hover { background: #1d4ed8; }
+            QPushButton:hover { background: #3b82f6; }
             QPushButton:pressed { background: #1e40af; }
-            QCheckBox { spacing: 6px; }
+            QCheckBox { spacing: 6px; color: #cbd5e1; }
             QHeaderView::section {
-                background: #e8eef9;
-                color: #0f172a;
+                background: #1e293b;
+                color: #e2e8f0;
                 padding: 8px;
                 border: 0;
-                border-right: 1px solid #d7deeb;
-                border-bottom: 1px solid #d7deeb;
+                border-right: 1px solid #334155;
+                border-bottom: 1px solid #334155;
                 font-weight: 600;
             }
             QTableWidget {
-                gridline-color: #e5e9f2;
-                selection-background-color: #dbeafe;
-                selection-color: #0f172a;
+                gridline-color: #334155;
+                alternate-background-color: #0b1220;
+            }
+            QTableCornerButton::section {
+                background: #1e293b;
+                border: 1px solid #334155;
+            }
+            QScrollBar:vertical, QScrollBar:horizontal {
+                background: #0f172a;
+                border: none;
+                margin: 0;
+            }
+            QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+                background: #334155;
+                border-radius: 6px;
+                min-height: 20px;
+                min-width: 20px;
+            }
+            QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover {
+                background: #475569;
             }
             """
         )
+        self.table.setAlternatingRowColors(True)
 
     def set_lineedit_bg(self, le: QLineEdit, color_hex: str | None):
         le.setStyleSheet("" if not color_hex else f"QLineEdit {{ background-color: {color_hex}; }}")
@@ -564,7 +593,7 @@ class FastEntry(QMainWindow):
         elif amt < 0:
             item.setForeground(QBrush(QColor("#D97706")))
         else:
-            item.setForeground(QBrush(QColor("#000000")))
+            item.setForeground(QBrush(QColor("#cbd5e1")))
 
     def load_dictionary(self):
         if DICT_FILE.exists():
