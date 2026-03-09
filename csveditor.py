@@ -281,62 +281,38 @@ class FastEntry(QMainWindow):
     def apply_modern_theme(self):
         self.setStyleSheet(
             """
-            QMainWindow { background: #0b1220; color: #e5e7eb; }
-            QWidget { background: #0b1220; color: #e5e7eb; }
-            QLabel { color: #e5e7eb; }
+            QMainWindow { background: #f3f6fb; }
+            QLabel { color: #1f2937; }
             QLineEdit, QTextEdit, QComboBox, QTableWidget {
-                background: #111827;
-                color: #e5e7eb;
-                border: 1px solid #334155;
+                background: #ffffff;
+                border: 1px solid #d7deeb;
                 border-radius: 8px;
                 padding: 6px;
-                selection-background-color: #1d4ed8;
-                selection-color: #f8fafc;
-            }
-            QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
-                border: 1px solid #3b82f6;
             }
             QPushButton {
                 background: #2563eb;
                 color: #ffffff;
-                border: 1px solid #1d4ed8;
+                border: none;
                 border-radius: 8px;
                 padding: 8px 12px;
                 font-weight: 600;
             }
             QPushButton:hover { background: #1d4ed8; }
             QPushButton:pressed { background: #1e40af; }
-            QPushButton:disabled { background: #334155; color: #94a3b8; border-color: #334155; }
-            QCheckBox { spacing: 6px; color: #e5e7eb; }
+            QCheckBox { spacing: 6px; }
             QHeaderView::section {
-                background: #1f2937;
-                color: #e5e7eb;
+                background: #e8eef9;
+                color: #0f172a;
                 padding: 8px;
                 border: 0;
-                border-right: 1px solid #334155;
-                border-bottom: 1px solid #334155;
+                border-right: 1px solid #d7deeb;
+                border-bottom: 1px solid #d7deeb;
                 font-weight: 600;
             }
             QTableWidget {
-                gridline-color: #334155;
-                selection-background-color: #1d4ed8;
-                selection-color: #f8fafc;
-                alternate-background-color: #0f172a;
-            }
-            QTableCornerButton::section {
-                background: #1f2937;
-                border: 1px solid #334155;
-            }
-            QScrollBar:vertical, QScrollBar:horizontal {
-                background: #0f172a;
-                border: none;
-                margin: 0;
-            }
-            QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
-                background: #334155;
-                border-radius: 6px;
-                min-height: 24px;
-                min-width: 24px;
+                gridline-color: #e5e9f2;
+                selection-background-color: #dbeafe;
+                selection-color: #0f172a;
             }
             """
         )
